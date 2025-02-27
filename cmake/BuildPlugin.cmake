@@ -5,31 +5,6 @@ MACRO (BUILD_LXQT_PLUGIN NAME)
     set(PROG_SHARE_DIR ${CMAKE_INSTALL_FULL_DATAROOTDIR}/lxqt/${PROGRAM})
     set(PLUGIN_SHARE_DIR ${PROG_SHARE_DIR}/${NAME})
 
-    # Translations **********************************
-    lxqt_translate_ts(${PROJECT_NAME}_QM_FILES
-        UPDATE_TRANSLATIONS ${UPDATE_TRANSLATIONS}
-        SOURCES
-            ${HEADERS}
-            ${SOURCES}
-            ${MOCS}
-            ${UIS}
-        TEMPLATE
-            ${NAME}
-        INSTALL_DIR
-            ${LXQT_TRANSLATIONS_DIR}/${PROGRAM}/${NAME}
-    )
-
-    #lxqt_translate_to(QM_FILES ${CMAKE_INSTALL_FULL_DATAROOTDIR}/lxqt/${PROGRAM}/${PROJECT_NAME})
-    file (GLOB ${PROJECT_NAME}_DESKTOP_FILES_IN resources/*.desktop.in)
-    lxqt_translate_desktop(DESKTOP_FILES
-        SOURCES
-            ${${PROJECT_NAME}_DESKTOP_FILES_IN}
-        USE_YAML
-    )
-
-    lxqt_plugin_translation_loader(QM_LOADER ${NAME} "lxqt-panel")
-    #************************************************
-
     file (GLOB CONFIG_FILES resources/*.conf)
 
     if (NOT DEFINED PLUGIN_DIR)
@@ -55,6 +30,5 @@ MACRO (BUILD_LXQT_PLUGIN NAME)
     target_link_libraries(${NAME} ${QTX_LIBRARIES} lxqt ${LIBRARIES} KF6::WindowSystem)
 
     install(FILES ${CONFIG_FILES}  DESTINATION ${PLUGIN_SHARE_DIR})
-    install(FILES ${DESKTOP_FILES} DESTINATION ${PROG_SHARE_DIR})
 
 ENDMACRO(BUILD_LXQT_PLUGIN)
