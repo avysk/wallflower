@@ -13,7 +13,7 @@ public:
   Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo);
   ~Wallflower();
 
-  virtual QWidget *widget() override { return &button; }
+  virtual QWidget *widget() override { return button; }
   virtual QString themeId() const override {
     return QStringLiteral("wallflower");
   }
@@ -25,7 +25,7 @@ public:
   void realign() override;
 
 private:
-  QToolButton button;
+  QToolButton *button;
 };
 
 class WallflowerLibrary : public QObject, public ILXQtPanelPluginLibrary {
