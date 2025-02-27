@@ -1,16 +1,8 @@
 cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 
-if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-    set(CMAKE_INSTALL_PREFIX /usr/local CACHE PATH "PREFIX=/usr/local" FORCE)
-endif()
-
 project(wallflower)
 
 set(PLUGIN "wallflower")
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-include(GNUInstallDirs)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -33,14 +25,6 @@ include(LXQtTranslate)
 
 include(LXQtCompilerSettings NO_POLICY_SCOPE)
 
-set(PLUGIN_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/lxqt-panel")
-
-message(STATUS "CMAKE Module linker flags: ${CMAKE_MODULE_LINKER_FLAGS}")
-message(STATUS "Panel plugins location: ${PLUGIN_DIR}")
-
-#########################################################################
-
-include_directories("/usr/include/lxqt/")
 set(HEADERS
   "${PLUGIN}plugin.h"
 )
@@ -49,7 +33,8 @@ set(SOURCES
   "${PLUGIN}plugin.cpp"
 )
 
-include ("cmake/BuildPlugin.cmake")
-BUILD_LXQT_PLUGIN(${PLUGIN})
-
-install(FILES wallflower.desktop DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/lxqt/lxqt-panel)
+add_library(${PLUGIN} MODULE ${HEADERS} ${SOURCES})
+target_link_libraries(${PLUGIN} Qt6::Widgets lxqt)
+install(TARGETS ${PLUGIN} DESTINATION $ENV{HOME}/.local/lib/lxqt-panel)
+install(FILES ${PLUGIN}.desktop
+    DESTINATION $ENV{HOME}/.local/share/lxqt/lxqt-panel)
