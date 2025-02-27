@@ -1,0 +1,9 @@
+#!/bin/sh
+
+rm -rf build
+mkdir build
+cd build || exit
+cmake ..
+make
+doas make install
+cd .. || exit
