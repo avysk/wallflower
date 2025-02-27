@@ -20,7 +20,7 @@ MACRO (BUILD_LXQT_PLUGIN NAME)
     endif()
 
     list(FIND STATIC_PLUGINS ${NAME} IS_STATIC)
-    set(SRC ${HEADERS} ${SOURCES} ${QM_LOADER} ${MOC_SOURCES} ${${PROJECT_NAME}_QM_FILES} ${RESOURCES} ${UIS} ${DESKTOP_FILES})
+    set(SRC ${HEADERS} ${SOURCES})
     if (${IS_STATIC} EQUAL -1) # not static
         add_library(${NAME} MODULE ${SRC}) # build dynamically loadable modules
         install(TARGETS ${NAME} DESTINATION ${PLUGIN_DIR}) # install the *.so file
