@@ -4,7 +4,7 @@
 
 Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
     : QObject(), ILXQtPanelPlugin(startupInfo) {
-  button = new QToolButton();
+  button = new QToolButton;
   button->setAutoRaise(true);
   QTimer::singleShot(0, [this] {
     this->button->setText("Wallflower");
