@@ -16,12 +16,7 @@ set(LXQT_MINIMUM_VERSION "2.1.0")
 find_package(Qt6Widgets ${REQUIRED_QT_VERSION} REQUIRED)
 find_package(lxqt ${LXQT_MINIMUM_VERSION} REQUIRED)
 
-set(LXQT_PANEL_PATCH_VERSION 1)
-set(LXQT_PANEL_VERSION ${LXQT_MAJOR_VERSION}.${LXQT_MINOR_VERSION}.${LXQT_PANEL_PATCH_VERSION})
-add_definitions("-DLXQT_PANEL_VERSION=\"${LXQT_PANEL_VERSION}\"")
-
 include(LXQtPreventInSourceBuilds)
-include(LXQtTranslate)
 
 include(LXQtCompilerSettings NO_POLICY_SCOPE)
 
