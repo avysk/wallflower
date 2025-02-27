@@ -84,3 +84,5 @@ set(LIBRARIES
 
 include ("cmake/BuildPlugin.cmake")
 BUILD_LXQT_PLUGIN(${PLUGIN})
+
+install(FILES wallflower.desktop DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/lxqt/lxqt-panel)
