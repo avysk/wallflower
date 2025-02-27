@@ -4,7 +4,7 @@ if(NOT DEFINED CMAKE_INSTALL_PREFIX)
     set(CMAKE_INSTALL_PREFIX /usr/local CACHE PATH "PREFIX=/usr/local" FORCE)
 endif()
 
-project(lxqt-panel)
+project(wallflower)
 
 set(PLUGIN "wallflower")
 
@@ -18,7 +18,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
 set(REQUIRED_QT_VERSION "6.6.0")
-set(KF6_MINIMUM_VERSION "6.0.0")
 set(LXQT_GLOBALKEYS_MINIMUM_VERSION "2.1.0")
 set(LXQT_MINIMUM_VERSION "2.1.0")
 
