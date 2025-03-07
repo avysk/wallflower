@@ -4,13 +4,21 @@ project(wallflower)
 
 set(PLUGIN "wallflower")
 
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(Qt6Widgets 6.8.0 REQUIRED)
+set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_AUTOMOC ON)
+
+find_package(Qt6 COMPONENTS Gui Network Widgets REQUIRED)
 find_package(lxqt 2.1.0 REQUIRED)
 
-add_library(${PLUGIN} MODULE wallflowerplugin.cpp wallflowerplugin.h)
-target_link_libraries(${PLUGIN} Qt6::Widgets lxqt)
+add_library(${PLUGIN} MODULE
+    wallflower.h wallflower.cpp
+    picture.h
+    sites/wallheavensearcher.h sites/wallheavensearcher.cpp)
+target_link_libraries(${PLUGIN} Qt6::Gui Qt6::Network Qt6::Widgets lxqt)
 
 set(INSTALL_DIR "$ENV{HOME}/.local")
 install(TARGETS ${PLUGIN}
