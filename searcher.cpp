@@ -1,9 +1,8 @@
 #include <memory>
 
+#include <QObject>
 #include <QString>
 #include <QVector>
-#include <qobject.h>
-#include <qtmetamacros.h>
 
 #include "picture.h"
 #include "searcher.h"

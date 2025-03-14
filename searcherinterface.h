@@ -1,5 +1,4 @@
-#ifndef SEARCHERINTERFACE_H
-#define SEARCHERINTERFACE_H
+#pragma once
 
 #include <QString>
 
@@ -10,5 +9,3 @@ public:
   virtual ~SearcherInterface() = default;
   virtual void searchWallpapers(const QString &term) = 0;
 };
-
-#endif // SEARCHERINTERFACE_H

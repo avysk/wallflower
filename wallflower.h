@@ -1,12 +1,11 @@
 #pragma once
 
 #include <QIcon>
+#include <QObject>
 #include <QToolButton>
 #include <QVector>
 #include <ilxqtpanel.h>
 #include <ilxqtpanelplugin.h>
-#include <qobject.h>
-#include <qtmetamacros.h>
 
 #include "picture.h"
 #include "searcher.h"

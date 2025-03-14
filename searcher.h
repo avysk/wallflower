@@ -2,10 +2,9 @@
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QObject>
 #include <QString>
 #include <QVector>
-#include <qobject.h>
-#include <qtmetamacros.h>
 
 #include "picture.h"
 #include "searcherinterface.h"
