@@ -1,36 +1,38 @@
-#ifndef SEARCHER_H
-#define SEARCHER_H
+#pragma once
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QObject>
 #include <QString>
+#include <QTimer>
 #include <QVector>
-#include <qobject.h>
-#include <qtmetamacros.h>
 
 #include "../picture.h"
-#include "basesearcher.h"
+#include "../searcher.h"
 
-class WallheavenSearcher : public BaseSearcher {
+class WallheavenSearcher : public QObject {
   Q_OBJECT
 
 public:
   explicit WallheavenSearcher(QObject *parent = nullptr);
-  ~WallheavenSearcher();
+  ~WallheavenSearcher() = default;
+  void attach(Searcher *searcher);
+  void searchWallpapers(const QString &term);
 
-public slots:
-  void search(const QString &term) override;
+signals:
+  void searchFinished(QVector<Picture> &result);
+  void searchError(const QString &message);
 
 private slots:
   void onPageReceived(QNetworkReply *searchReply);
+  void search();
 
 private:
-  void searchWallpapers();
+  const unsigned int RESULTS_CUTOFF = 3000;
   const QString WALLHEAVEN_API_URL = "https://wallhaven.cc/api/v1/search";
   QNetworkAccessManager mSearchManager;
   unsigned int mCurrentPage;
   QString mQuery;
-  QVector<const Picture> mWallpapers;
+  QTimer mTimer;
+  QVector<Picture> mWallpapers;
 };
-
-#endif // SEARCHER_H

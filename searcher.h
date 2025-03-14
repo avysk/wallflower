@@ -1,5 +1,4 @@
-#ifndef SEARCHER_H
-#define SEARCHER_H
+#pragma once
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -9,27 +8,27 @@
 #include <qtmetamacros.h>
 
 #include "picture.h"
-#include "sites/basesearcher.h"
+#include "searcherinterface.h"
 
 class Searcher : public QObject {
   Q_OBJECT
 
 public:
-  explicit Searcher(QObject *parent = nullptr);
-  ~Searcher();
-  void setImpl(std::unique_ptr<BaseSearcher> impl);
+  explicit Searcher(QObject *parent = nullptr) : QObject(parent) {};
+  ~Searcher() = default;
+  void setImpl(std::unique_ptr<SearcherInterface> impl);
 
 signals:
-  void searchFinished(const QVector<const Picture> &result);
+  void searchFinished(QVector<Picture> &result);
   void searchError(const QString &message);
+
+public:
+  virtual void onSearchFinished(QVector<Picture> &result);
+  virtual void onSearchError(const QString &message);
 
 public slots:
   void searchWallpapers(const QString &term);
-  void onSearchFinished(const QVector<const Picture> &result);
-  void onSearchError(const QString &message);
 
 private:
-  std::unique_ptr<BaseSearcher> mSearcherImpl;
+  std::unique_ptr<SearcherInterface> mImpl;
 };
-
-#endif

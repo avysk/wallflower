@@ -16,7 +16,11 @@ find_package(lxqt 2.1.0 REQUIRED)
 
 add_library(${PLUGIN} MODULE
     wallflower.h wallflower.cpp
+    basesearcher.h basesearcher.cpp
     picture.h
+    searcher.h searcher.cpp
+    searcherconcepts.h
+    searcherinterface.h
     sites/wallheavensearcher.h sites/wallheavensearcher.cpp)
 target_link_libraries(${PLUGIN} Qt6::Gui Qt6::Network Qt6::Widgets lxqt)
 
