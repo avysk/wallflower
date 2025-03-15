@@ -11,7 +11,7 @@ so it is needed as well.
 
 === Compilation
 
-For compilation you need cmake and a C\+\+ compiler recognized by it, supporting
+For compilation you need cmake and a C\++ compiler recognized by it, supporting
 C\+\+20 standard. You also need something (in the simplest case make) cmake can
 generate a build system for.
 
