@@ -1,0 +1,78 @@
+= Wallflower
+
+Wallflower is a plugin for LXQT panel allowing to download wallpapers from
+wallheaven.cc and set up them.
+
+== Requirements
+
+The plugin (obviously) needs **LXQT panel**. The desktop should be managed by
+**pcmanfm-qt**. The requests for setting a wallpaper is sent over **DBus**
+so it is needed as well.
+
+=== Compilation
+
+For compilation you need cmake and C++ compiler recongized by it, supporting
+C++ 20 standard. You also need something (in the simplest case make) cmake can
+generate a build system for.
+
+=== Installation
+
+During the installation the plugin itself (`libwallflower.so`) goes into
+`~/.local/lib/lxqt-panel` directory, and the corresponding desktop file
+(`wallflower.desktop`) into `~/.local/share/lxqt/lxqt-panel`.
+
+== Installation of the plugin
+
+At this moment, the only way to install the plugin is to compile it from source.
+Clone the repository, go into the directory where the cloned repository resides
+and do the following:
+
+----
+mkdir build
+cd build
+cmake ..
+make
+make install
+----
+
+== Usage
+
+=== Used locations in filesystem
+
+Besides what is mentioned above, the downloaded wallpaper goes into
+`~/.local/share/lxqt-panel/wallflower`. *Notice that on fetching the new
+wallpapere the old one is deleted.*
+
+=== Instructions
+
+LXQT will find desktop file automatically, but, unfortunately, will look only
+in system directories for plugins, so it will not find `libwallflower.so` by
+default. You have two options:
+
+- (recommended) Set `LXQTPANEL_PLUGIN_PATH` environment variable to
+`~/.local/lib/lxqt-panel/` before running the panel. This, for example, can be
+done in LXQT Session Settings, in Environment section.
+- If you want, you can copy `libwallflower.so` to the system directory where
+other LXQT panel plugins are.
+
+After you add the plugin to the panel, clicking on the corresponding icon will
+show the menu with one command ("search"). Click on it to download and set a
+wallpaper. When the plugin operates, plugin icon is changed to show it is in a
+busy state. If something goes wrong, the plugin icon will be changed to show
+that error occured and tooltip will contain the corresponding error message.
+
+== Hackety-hack
+
+The plugin is in a very raw state, and a lot of things are wrong:
+
+- no configuration
+- support for wallheaven.cc only
+- the search is always performed for term "nature"
+- as soon as at least 100 results are found, the search stops
+- no regular update of wallpaper is supported, you have to click on menu item
+  when you want a new wallpaper
+- rate limiting is supported during the search, but if the download request hits
+  429, bad luck
+- the menu is not changed when the plugin is in the busy or error state
+- `qDebug()` outputs a lot of information and I don't know where it goes to; if
+  the panel is run from the command line, it goes to the console
