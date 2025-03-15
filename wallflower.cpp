@@ -4,6 +4,7 @@
 #include <QWidgetAction>
 
 #include "basesearcher.h"
+#include "downloader.h"
 #include "searcher.h"
 #include "sites/wallheavensearcher.h"
 #include "wallflower.h"
@@ -17,15 +18,24 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
   mButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
   mButton->setPopupMode(QToolButton::InstantPopup);
   auto menu = new QMenu(mButton.get());
-  menu->addAction("busy", this, [this]() { busySlot("busy"); });
-  menu->addAction("error", this, [this]() { errorSlot("error"); });
-  menu->addAction("normal", this, [this]() { normalSlot(); });
-  menu->addAction("search", this, [this]() {
+  menu->addAction("fetch and set", this, [this]() {
     busySlot("searching");
     mSearcher->searchWallpapers("nature");
   });
   mButton->setMenu(menu);
   normalSlot();
+
+  mDownloader = std::make_unique<Downloader>();
+  connect(mDownloader.get(), &Downloader::downloadFinished, this,
+          &Wallflower::downloadDone);
+  connect(mDownloader.get(), &Downloader::downloadError, this,
+          &Wallflower::errorSlot);
+
+  mPodibasu = std::make_unique<Podibasu>();
+  connect(mPodibasu.get(), &Podibasu::wallpaperSet, this,
+          &Wallflower::normalSlot);
+  connect(mPodibasu.get(), &Podibasu::wallpaperSetError, this,
+          &Wallflower::errorSlot);
 
   mSearcher = std::make_unique<Searcher>();
   mSearcher->setImpl(
@@ -63,9 +73,15 @@ void Wallflower::normalSlot(const QString &state) {
   setMessage(state);
 }
 
+void Wallflower::downloadDone(const QString &imageFile) {
+  this->busySlot(
+      QString("Wallpaper downloaded to %1, setting.").arg(imageFile));
+  mPodibasu->setWallpaper(imageFile);
+}
+
 void Wallflower::searchDone(QVector<Picture> &result) {
-  this->normalSlot(QString("Got %1 results").arg(result.length()));
   int randomIndex = QRandomGenerator::global()->bounded(result.size());
   auto p = result[randomIndex];
   qDebug() << randomIndex << p.id << p.path;
+  mDownloader->download(p.path);
 }

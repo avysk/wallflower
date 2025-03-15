@@ -7,7 +7,9 @@
 #include <ilxqtpanel.h>
 #include <ilxqtpanelplugin.h>
 
+#include "downloader.h"
 #include "picture.h"
+#include "podibasu.h"
 #include "searcher.h"
 
 class Wallflower : public QObject, public ILXQtPanelPlugin {
@@ -29,17 +31,20 @@ public:
   void realign() override;
 
 public slots:
-  void searchDone(QVector<Picture> &wallpapers);
-  void setMessage(const QString &message);
   void errorSlot(const QString &message);
+  void setMessage(const QString &message);
 
 private slots:
   void busySlot(const QString &state);
+  void downloadDone(const QString &imageFile);
   void normalSlot(const QString &state = "");
+  void searchDone(QVector<Picture> &wallpapers);
 
 private:
   void searchWallpapers(const QString &query);
   std::unique_ptr<QToolButton> mButton;
+  std::unique_ptr<Downloader> mDownloader;
+  std::unique_ptr<Podibasu> mPodibasu;
   std::unique_ptr<Searcher> mSearcher;
   QIcon mBusyIcon, mErrorIcon, mNormalIcon;
 };

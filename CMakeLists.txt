@@ -11,18 +11,20 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 COMPONENTS Gui Network Widgets REQUIRED)
+find_package(Qt6 COMPONENTS DBus Gui Network Widgets REQUIRED)
 find_package(lxqt 2.1.0 REQUIRED)
 
 add_library(${PLUGIN} MODULE
     wallflower.h wallflower.cpp
     basesearcher.h basesearcher.cpp
+    downloader.h downloader.cpp
     picture.h
+    podibasu.h podibasu.cpp
     searcher.h searcher.cpp
     searcherconcepts.h
     searcherinterface.h
     sites/wallheavensearcher.h sites/wallheavensearcher.cpp)
-target_link_libraries(${PLUGIN} Qt6::Gui Qt6::Network Qt6::Widgets lxqt)
+target_link_libraries(${PLUGIN} Qt6::DBus Qt6::Gui Qt6::Network Qt6::Widgets lxqt)
 
 set(INSTALL_DIR "$ENV{HOME}/.local")
 install(TARGETS ${PLUGIN}

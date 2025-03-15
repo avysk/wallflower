@@ -37,6 +37,7 @@ void WallheavenSearcher::search() {
   QUrl searchUrl(WALLHEAVEN_API_URL);
   QUrlQuery queryUrl;
   queryUrl.addQueryItem("q", mQuery);
+  // queryUrl.addQueryItem("sorting", "top");
   queryUrl.addQueryItem("page", QString::number(mCurrentPage));
   qDebug() << "Getting page" << mCurrentPage;
   searchUrl.setQuery(queryUrl);

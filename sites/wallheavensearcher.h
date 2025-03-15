@@ -28,7 +28,7 @@ private slots:
   void search();
 
 private:
-  const unsigned int RESULTS_CUTOFF = 3000;
+  const unsigned int RESULTS_CUTOFF = 50;
   const QString WALLHEAVEN_API_URL = "https://wallhaven.cc/api/v1/search";
   QNetworkAccessManager mSearchManager;
   unsigned int mCurrentPage;
