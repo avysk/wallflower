@@ -11,11 +11,13 @@
 #include "downloader.h"
 
 Downloader::Downloader(QObject *parent) : QObject(parent) {
-  mSavePath =
+  mSavePath = std::make_unique<const QString>(
       QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) +
-      "/wallflower";
-  QDir(mSavePath).mkpath(".");
-  connect(&mDownloadManager, &QNetworkAccessManager::finished, this,
+      "/wallflower");
+  QDir(*mSavePath).mkpath(".");
+
+  mDownloadManager = std::make_unique<QNetworkAccessManager>();
+  connect(mDownloadManager.get(), &QNetworkAccessManager::finished, this,
           &Downloader::onDownloadFinished);
 }
 
@@ -23,18 +25,18 @@ void Downloader::download(const QString &imageUri) {
   qDebug() << "Starting download of" << imageUri;
   const QUrl url(imageUri);
   const QNetworkRequest imageRequest(imageUri);
-  mDownloadManager.get(imageRequest);
+  mDownloadManager->get(imageRequest);
 }
 
 void Downloader::onDownloadFinished(QNetworkReply *downloadReply) {
   if (downloadReply->error() == QNetworkReply::NoError) {
     const QString imageName = downloadReply->url().fileName();
-    const QString downloadTo = mSavePath + "/" + imageName;
+    const QString downloadTo = *mSavePath + "/" + imageName;
     QFile imageFile(downloadTo);
     if (imageFile.open(QIODevice::WriteOnly)) {
       imageFile.write(downloadReply->readAll());
       // now we need to delete all other files in mSavePath directory
-      QDir dir(mSavePath);
+      QDir dir(*mSavePath);
       QStringList files = dir.entryList(QDir::Files);
       qDebug() << "Found files:" << files;
       for (auto &file : files) {

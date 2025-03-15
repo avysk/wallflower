@@ -8,7 +8,7 @@
 #include "searcher.h"
 #include "searcherinterface.h"
 
-void Searcher::onSearchFinished(QVector<Picture> &result) {
+void Searcher::onSearchFinished(const QVector<Picture> &result) {
   emit searchFinished(result);
 };
 

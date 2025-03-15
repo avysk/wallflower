@@ -16,11 +16,11 @@ class WallheavenSearcher : public QObject {
 public:
   explicit WallheavenSearcher(QObject *parent = nullptr);
   ~WallheavenSearcher() = default;
-  void attach(Searcher *searcher);
+  void attach(const Searcher *searcher) const;
   void searchWallpapers(const QString &term);
 
 signals:
-  void searchFinished(QVector<Picture> &result);
+  void searchFinished(const QVector<Picture> &result);
   void searchError(const QString &message);
 
 private slots:
@@ -28,11 +28,11 @@ private slots:
   void search();
 
 private:
-  const unsigned int RESULTS_CUTOFF = 50;
+  constexpr static unsigned int RESULTS_CUTOFF = 100;
   const QString WALLHEAVEN_API_URL = "https://wallhaven.cc/api/v1/search";
-  QNetworkAccessManager mSearchManager;
   unsigned int mCurrentPage;
-  QString mQuery;
-  QTimer mTimer;
+  std::unique_ptr<QNetworkAccessManager> mSearchManager;
+  std::unique_ptr<const QString> mQuery;
+  std::unique_ptr<QTimer> mTimer;
   QVector<Picture> mWallpapers;
 };

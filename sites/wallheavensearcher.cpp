@@ -1,6 +1,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QObject>
@@ -13,13 +14,16 @@
 #include "wallheavensearcher.h"
 
 WallheavenSearcher::WallheavenSearcher(QObject *parent) : QObject(parent) {
-  mTimer.setSingleShot(true);
-  connect(&mTimer, &QTimer::timeout, this, &WallheavenSearcher::search);
-  connect(&mSearchManager, &QNetworkAccessManager::finished, this,
+  mQuery = std::make_unique<const QString>("");
+  mSearchManager = std::make_unique<QNetworkAccessManager>();
+  mTimer = std::make_unique<QTimer>();
+  mTimer->setSingleShot(true);
+  connect(mSearchManager.get(), &QNetworkAccessManager::finished, this,
           &WallheavenSearcher::onPageReceived);
+  connect(mTimer.get(), &QTimer::timeout, this, &WallheavenSearcher::search);
 }
 
-void WallheavenSearcher::attach(Searcher *searcher) {
+void WallheavenSearcher::attach(const Searcher *searcher) const {
   connect(this, &WallheavenSearcher::searchFinished, searcher,
           &Searcher::onSearchFinished);
   connect(this, &WallheavenSearcher::searchError, searcher,
@@ -29,21 +33,21 @@ void WallheavenSearcher::attach(Searcher *searcher) {
 void WallheavenSearcher::searchWallpapers(const QString &term) {
   mCurrentPage = 1;
   mWallpapers.clear();
-  mQuery = term;
+  mQuery = std::make_unique<const QString>(term);
   search();
 }
 
 void WallheavenSearcher::search() {
   QUrl searchUrl(WALLHEAVEN_API_URL);
   QUrlQuery queryUrl;
-  queryUrl.addQueryItem("q", mQuery);
+  queryUrl.addQueryItem("q", *mQuery);
   // queryUrl.addQueryItem("sorting", "top");
   queryUrl.addQueryItem("page", QString::number(mCurrentPage));
   qDebug() << "Getting page" << mCurrentPage;
   searchUrl.setQuery(queryUrl);
   QNetworkRequest searchRequest(searchUrl);
   // TODO: error on timeout
-  mSearchManager.get(searchRequest);
+  mSearchManager->get(searchRequest);
 }
 
 void WallheavenSearcher::onPageReceived(QNetworkReply *searchReply) {
@@ -67,11 +71,11 @@ void WallheavenSearcher::onPageReceived(QNetworkReply *searchReply) {
         bool ok;
         int retrySeconds = retryAfterValue.toInt(&ok);
         if (ok) {
-          int retryMs =
+          int retryMiliseconds =
               retrySeconds * 1000 + 10; // extra 10 ms as safety margin
-          qDebug() << "Retry after" << retryMs << "miliseconds.";
-          mTimer.setInterval(retryMs);
-          mTimer.start();
+          qDebug() << "Retry after" << retryMiliseconds << "miliseconds.";
+          mTimer->setInterval(retryMiliseconds);
+          mTimer->start();
         } else {
           qCritical() << "Retry-After is a date string:" << retryAfterValue;
           emit searchError("wallheaven.cc API reported too many requests, but "
@@ -82,7 +86,7 @@ void WallheavenSearcher::onPageReceived(QNetworkReply *searchReply) {
       emit searchError(
           QString("Cannot get page %1 af search result for term %2: %3 %4")
               .arg(mCurrentPage)
-              .arg(mQuery)
+              .arg(*mQuery)
               .arg(code)
               .arg(searchReply->errorString()));
     }
@@ -95,9 +99,8 @@ void WallheavenSearcher::onPageReceived(QNetworkReply *searchReply) {
   auto jsonArray = jsonObj["data"].toArray();
 
   for (const auto &entry : jsonArray) {
-    Picture p;
-    p.id = entry.toObject()["id"].toString();
-    p.path = entry.toObject()["path"].toString();
+    const Picture p = {.id = entry.toObject()["id"].toString(),
+                       .path = entry.toObject()["path"].toString()};
     mWallpapers.append(p);
   }
 
@@ -109,8 +112,8 @@ void WallheavenSearcher::onPageReceived(QNetworkReply *searchReply) {
     qDebug() << "Found" << mWallpapers.size() << "results, stopping search";
   } else if (mCurrentPage < lastPage) {
     mCurrentPage++;
-    mTimer.setInterval(0);
-    mTimer.start();
+    mTimer->setInterval(0);
+    mTimer->start();
     return;
   }
   emit searchFinished(mWallpapers);

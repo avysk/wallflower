@@ -8,7 +8,6 @@ class Podibasu : public QObject {
 
 public:
   Podibasu(QObject *parent = nullptr) : QObject(parent) {};
-  ~Podibasu() = default;
 
 signals:
   void wallpaperSet(const QString &message);

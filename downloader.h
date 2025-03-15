@@ -22,6 +22,6 @@ private slots:
   void onDownloadFinished(QNetworkReply *downloadReply);
 
 private:
-  QNetworkAccessManager mDownloadManager;
-  QString mSavePath;
+  std::unique_ptr<QNetworkAccessManager> mDownloadManager;
+  std::unique_ptr<const QString> mSavePath;
 };

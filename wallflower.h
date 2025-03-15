@@ -38,7 +38,7 @@ private slots:
   void busySlot(const QString &state);
   void downloadDone(const QString &imageFile);
   void normalSlot(const QString &state = "");
-  void searchDone(QVector<Picture> &wallpapers);
+  void searchDone(const QVector<Picture> &wallpapers);
 
 private:
   void searchWallpapers(const QString &query);
@@ -46,7 +46,7 @@ private:
   std::unique_ptr<Downloader> mDownloader;
   std::unique_ptr<Podibasu> mPodibasu;
   std::unique_ptr<Searcher> mSearcher;
-  QIcon mBusyIcon, mErrorIcon, mNormalIcon;
+  std::unique_ptr<const QIcon> mBusyIcon, mErrorIcon, mNormalIcon;
 };
 
 class WallflowerLibrary : public QObject, public ILXQtPanelPluginLibrary {

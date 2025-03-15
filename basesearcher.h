@@ -13,7 +13,7 @@ template <typename SearcherImplementation>
 class BaseSearcher : public SearcherInterface {
 
 public:
-  explicit BaseSearcher(Searcher &searcher);
+  explicit BaseSearcher(const Searcher &searcher);
   ~BaseSearcher() = default;
   virtual void searchWallpapers(const QString &term) override;
 

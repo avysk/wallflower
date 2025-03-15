@@ -11,14 +11,15 @@
 
 Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
     : QObject(), ILXQtPanelPlugin(startupInfo) {
-  mBusyIcon = QIcon::fromTheme("view-refresh");
-  mErrorIcon = QIcon::fromTheme("dialog-error");
-  mNormalIcon = QIcon::fromTheme("desktop-preferences-wallpaper");
+  mBusyIcon = std::make_unique<const QIcon>(QIcon::fromTheme("view-refresh"));
+  mErrorIcon = std::make_unique<const QIcon>(QIcon::fromTheme("dialog-error"));
+  mNormalIcon = std::make_unique<const QIcon>(
+      QIcon::fromTheme("desktop-preferences-wallpaper"));
   mButton = std::make_unique<QToolButton>();
   mButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
   mButton->setPopupMode(QToolButton::InstantPopup);
   auto menu = new QMenu(mButton.get());
-  menu->addAction("fetch and set", this, [this]() {
+  menu->addAction("search", this, [this]() {
     busySlot("searching");
     mSearcher->searchWallpapers("nature");
   });
@@ -58,17 +59,17 @@ void Wallflower::setMessage(const QString &message) {
 }
 
 void Wallflower::busySlot(const QString &state) {
-  mButton->setIcon(mBusyIcon);
+  mButton->setIcon(*mBusyIcon);
   setMessage(state);
 }
 
 void Wallflower::errorSlot(const QString &message) {
-  mButton->setIcon(mErrorIcon);
+  mButton->setIcon(*mErrorIcon);
   setMessage(message);
 }
 
 void Wallflower::normalSlot(const QString &state) {
-  mButton->setIcon(mNormalIcon);
+  mButton->setIcon(*mNormalIcon);
   mButton->update();
   setMessage(state);
 }
@@ -79,7 +80,7 @@ void Wallflower::downloadDone(const QString &imageFile) {
   mPodibasu->setWallpaper(imageFile);
 }
 
-void Wallflower::searchDone(QVector<Picture> &result) {
+void Wallflower::searchDone(const QVector<Picture> &result) {
   int randomIndex = QRandomGenerator::global()->bounded(result.size());
   auto p = result[randomIndex];
   qDebug() << randomIndex << p.id << p.path;

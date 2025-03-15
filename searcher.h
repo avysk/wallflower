@@ -14,15 +14,16 @@ class Searcher : public QObject {
 
 public:
   explicit Searcher(QObject *parent = nullptr) : QObject(parent) {};
-  ~Searcher() = default;
   void setImpl(std::unique_ptr<SearcherInterface> impl);
 
 signals:
-  void searchFinished(QVector<Picture> &result);
+  // unfortunately, QVector<const T> is not possible, and QVector<const T*> is
+  // too much manual memory-management work
+  void searchFinished(const QVector<Picture> &result);
   void searchError(const QString &message);
 
 public:
-  virtual void onSearchFinished(QVector<Picture> &result);
+  virtual void onSearchFinished(const QVector<Picture> &result);
   virtual void onSearchError(const QString &message);
 
 public slots:

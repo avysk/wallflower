@@ -8,8 +8,10 @@
 
 template <typename SearcherImplementation>
   requires IsSearcherImplementation<SearcherImplementation>
-BaseSearcher<SearcherImplementation>::BaseSearcher(Searcher &searcher) {
+BaseSearcher<SearcherImplementation>::BaseSearcher(const Searcher &searcher) {
   mImpl = std::make_unique<SearcherImplementation>();
+  // Connections to searcher can be made here, but how to require that
+  // SearcherImplementation has appropriate signals?
   mImpl->attach(&searcher);
 }
 
