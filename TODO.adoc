@@ -1,0 +1,3 @@
+- Handle 429 when downloading image
+- Handle TODOs in the code
+- Make configuration work
