@@ -7,10 +7,12 @@
 #include "downloader.h"
 #include "searcher.h"
 #include "sites/wallheavensearcher.h"
+#include "version.h"
 #include "wallflower.h"
 
 Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
     : QObject(), ILXQtPanelPlugin(startupInfo) {
+  qDebug() << "Wallflower" << WALLFLOWER_VERSION;
   mBusyIcon = std::make_unique<const QIcon>(QIcon::fromTheme("view-refresh"));
   mErrorIcon = std::make_unique<const QIcon>(QIcon::fromTheme("dialog-error"));
   mNormalIcon = std::make_unique<const QIcon>(
@@ -19,6 +21,13 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
   mButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
   mButton->setPopupMode(QToolButton::InstantPopup);
   auto menu = new QMenu(mButton.get());
+  auto *about = new QLabel(QString("wallflower %1").arg(WALLFLOWER_VERSION));
+  about->setAlignment(Qt::AlignCenter);
+  about->setStyleSheet("font-weight: bold;");
+  auto *aboutAction = new QWidgetAction(menu);
+  aboutAction->setDefaultWidget(about);
+  menu->addAction(aboutAction);
+  menu->addSeparator();
   menu->addAction("search", this, [this]() {
     busySlot("searching");
     mSearcher->searchWallpapers("nature");
