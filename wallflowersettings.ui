@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -48,7 +48,7 @@
        </sizepolicy>
       </property>
       <property name="toolTip">
-       <string extracomment="Search term for walpapers"/>
+       <string>Search term for walpapers</string>
       </property>
      </widget>
     </item>
@@ -88,7 +88,7 @@
          </size>
         </property>
         <property name="toolTip">
-         <string extracomment="As soon as the number of received results is no less, the search stops"/>
+         <string>As soon as the number of received results is no less, the search stops</string>
         </property>
        </widget>
       </item>
