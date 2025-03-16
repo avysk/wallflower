@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDialog>
 #include <QIcon>
 #include <QObject>
 #include <QToolButton>
@@ -24,8 +25,9 @@ public:
     return QStringLiteral("wallflower");
   }
   virtual ILXQtPanelPlugin::Flags flags() const override {
-    return PreferRightAlignment;
+    return HaveConfigDialog | PreferRightAlignment;
   }
+  QDialog *configureDialog() override;
   bool isSeparate() const override { return false; }
   bool isExpandable() const override { return false; }
   void realign() override;

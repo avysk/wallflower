@@ -2,6 +2,7 @@
 #include <QObject>
 #include <QRandomGenerator>
 #include <QWidgetAction>
+#include <ilxqtpanelplugin.h>
 
 #include "basesearcher.h"
 #include "downloader.h"
@@ -9,6 +10,7 @@
 #include "sites/wallheavensearcher.h"
 #include "version.h"
 #include "wallflower.h"
+#include "wallflowersettings.h"
 
 Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
     : QObject(), ILXQtPanelPlugin(startupInfo) {
@@ -94,4 +96,8 @@ void Wallflower::searchDone(const QVector<Picture> &result) {
   auto p = result[randomIndex];
   qDebug() << randomIndex << p.id << p.path;
   mDownloader->download(p.path);
+}
+
+QDialog *Wallflower::configureDialog() {
+  return new WallflowerSettings(settings());
 }

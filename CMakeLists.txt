@@ -24,6 +24,9 @@ include_directories(${CMAKE_BINARY_DIR})
 find_package(Qt6 COMPONENTS DBus Gui Network Widgets REQUIRED)
 find_package(lxqt 2.1.0 REQUIRED)
 
+set(UI_FILES wallflowersettings.ui)
+qt6_wrap_ui(GENERATED_UI_FILES ${UI_FILES})
+
 add_library(${PLUGIN} MODULE
     wallflower.h wallflower.cpp
     basesearcher.h basesearcher.cpp
@@ -34,7 +37,9 @@ add_library(${PLUGIN} MODULE
     searcherconcepts.h
     searcherinterface.h
     sites/wallheavensearcher.h sites/wallheavensearcher.cpp
-    version.h)
+    version.h
+    wallflowersettings.h wallflowersettings.cpp
+    ${GENERATED_UI_FILES})
 target_link_libraries(
     ${PLUGIN} Qt6::DBus Qt6::Gui Qt6::Network Qt6::Widgets lxqt
 )
