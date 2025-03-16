@@ -18,8 +18,8 @@ BaseSearcher<SearcherImplementation>::BaseSearcher(const Searcher &searcher) {
 template <typename SearcherImplementation>
   requires IsSearcherImplementation<SearcherImplementation>
 void BaseSearcher<SearcherImplementation>::searchWallpapers(
-    const QString &term) {
-  mImpl->searchWallpapers(term);
+    const QString &term, const unsigned int resultsCutoff) {
+  mImpl->searchWallpapers(term, resultsCutoff);
 }
 
 template class BaseSearcher<WallheavenSearcher>;

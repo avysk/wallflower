@@ -36,7 +36,9 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
   menu->addSeparator();
   menu->addAction("search", this, [this]() {
     busySlot("searching");
-    mSearcher->searchWallpapers("nature");
+    mSearcher->searchWallpapers(
+        settings()->value("searchTerm", "nature").toString(),
+        settings()->value("resultsCutoff", "100").toInt());
   });
   mButton->setMenu(menu);
   normalSlot();

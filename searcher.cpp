@@ -16,8 +16,9 @@ void Searcher::onSearchError(const QString &message) {
   emit searchError(message);
 };
 
-void Searcher::searchWallpapers(const QString &term) {
-  mImpl->searchWallpapers(term);
+void Searcher::searchWallpapers(const QString &term,
+                                const unsigned int resultsCutoff) {
+  mImpl->searchWallpapers(term, resultsCutoff);
 };
 
 void Searcher::setImpl(std::unique_ptr<SearcherInterface> interface) {

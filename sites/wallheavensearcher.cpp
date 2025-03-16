@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
+#include <ilxqtpanelplugin.h>
 
 #include "../searcher.h"
 #include "wallheavensearcher.h"
@@ -30,10 +31,12 @@ void WallheavenSearcher::attach(const Searcher *searcher) const {
           &Searcher::onSearchError);
 }
 
-void WallheavenSearcher::searchWallpapers(const QString &term) {
+void WallheavenSearcher::searchWallpapers(const QString &term,
+                                          const unsigned int resultsCutoff) {
   mCurrentPage = 1;
+  mResultsCutoff = resultsCutoff;
   mWallpapers.clear();
-  mQuery = std::make_unique<const QString>(term);
+  mQuery = std::make_unique<const QString>(QUrl::toPercentEncoding(term));
   search();
 }
 
@@ -43,8 +46,8 @@ void WallheavenSearcher::search() {
   queryUrl.addQueryItem("q", *mQuery);
   // queryUrl.addQueryItem("sorting", "top");
   queryUrl.addQueryItem("page", QString::number(mCurrentPage));
-  qDebug() << "Getting page" << mCurrentPage;
   searchUrl.setQuery(queryUrl);
+  qDebug() << "Getting page" << mCurrentPage << searchUrl;
   QNetworkRequest searchRequest(searchUrl);
   // TODO: error on timeout
   mSearchManager->get(searchRequest);
@@ -108,7 +111,7 @@ void WallheavenSearcher::onPageReceived(QNetworkReply *searchReply) {
 
   unsigned int lastPage = jsonObj["meta"].toObject()["last_page"].toInt();
   qDebug() << "pages:" << lastPage;
-  if (mWallpapers.size() >= RESULTS_CUTOFF) {
+  if (mWallpapers.size() >= mResultsCutoff) {
     qDebug() << "Found" << mWallpapers.size() << "results, stopping search";
   } else if (mCurrentPage < lastPage) {
     mCurrentPage++;

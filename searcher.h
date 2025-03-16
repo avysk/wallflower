@@ -27,7 +27,7 @@ public:
   virtual void onSearchError(const QString &message);
 
 public slots:
-  void searchWallpapers(const QString &term);
+  void searchWallpapers(const QString &term, const unsigned int resultsCutoff);
 
 private:
   std::unique_ptr<SearcherInterface> mImpl;

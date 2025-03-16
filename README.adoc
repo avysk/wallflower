@@ -41,7 +41,7 @@ make install
 
 Besides what is mentioned above, the downloaded wallpaper goes into
 `~/.local/share/lxqt-panel/wallflower`. *Notice that on fetching the new
-wallpapere the old one is deleted.*
+wallpaper the old one is deleted.*
 
 === Instructions
 
@@ -61,14 +61,19 @@ wallpaper. When the plugin operates, the plugin icon is changed to show it is in
 busy state. If something goes wrong, the plugin icon will be changed to show
 that an error occurred and a tooltip will contain the corresponding error message.
 
+In a plugin configuration dialog, you can search a term to be used for
+searching wallpapers. The search term is saved between the sessions. The
+default search term is "nature". You can also set the "results cutoff" value.
+As soon as the plugin finds the number of wallpapers at least equal to the
+cutoff value, it stops searching. The default value is 100. The maximum value
+possible is 9999. Notice that the setting high value may result in a long
+delay in the search due to the rate limiting.
+
 == Hackety-hack
 
 The plugin is in a very raw state, and a lot of things are wrong:
 
-- no configuration
 - support for wallheaven.cc only
-- the search is always performed for term "nature"
-- as soon as at least 100 results are found, the search stops
 - no regular update of wallpaper is supported, you have to click on the menu item
   when you want a new wallpaper
 - rate limiting is supported during the search, but if the download request hits

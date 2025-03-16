@@ -15,7 +15,8 @@ class BaseSearcher : public SearcherInterface {
 public:
   explicit BaseSearcher(const Searcher &searcher);
   ~BaseSearcher() = default;
-  virtual void searchWallpapers(const QString &term) override;
+  virtual void searchWallpapers(const QString &term,
+                                const unsigned int resultsCutoff) override;
 
 private:
   std::unique_ptr<SearcherImplementation> mImpl;

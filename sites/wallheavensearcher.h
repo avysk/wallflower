@@ -17,7 +17,7 @@ public:
   explicit WallheavenSearcher(QObject *parent = nullptr);
   ~WallheavenSearcher() = default;
   void attach(const Searcher *searcher) const;
-  void searchWallpapers(const QString &term);
+  void searchWallpapers(const QString &term, const unsigned int resultsCutoff);
 
 signals:
   void searchFinished(const QVector<Picture> &result);
@@ -28,9 +28,8 @@ private slots:
   void search();
 
 private:
-  constexpr static unsigned int RESULTS_CUTOFF = 100;
   const QString WALLHEAVEN_API_URL = "https://wallhaven.cc/api/v1/search";
-  unsigned int mCurrentPage;
+  unsigned int mCurrentPage, mResultsCutoff;
   std::unique_ptr<QNetworkAccessManager> mSearchManager;
   std::unique_ptr<const QString> mQuery;
   std::unique_ptr<QTimer> mTimer;
