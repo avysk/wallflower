@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QAbstractButton>
 #include <QDialog>
 #include <QObject>
 #include <pluginsettings.h>
@@ -21,5 +22,8 @@ public:
 
 private:
   Ui::Dialog *ui;
-  PluginSettings &msettings;
+  PluginSettings &mSettings;
+
+private slots:
+  void dialogButtonBoxAction(QAbstractButton *button);
 };
