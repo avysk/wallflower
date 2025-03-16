@@ -1,7 +1,11 @@
+#include <QDialog>
+#include <QLabel>
 #include <QMenu>
 #include <QObject>
 #include <QRandomGenerator>
+#include <QToolButton>
 #include <QWidgetAction>
+#include <QtCore/Qt>
 #include <ilxqtpanelplugin.h>
 
 #include "basesearcher.h"
