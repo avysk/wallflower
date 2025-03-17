@@ -47,6 +47,20 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
         settings()->value("resultsCutoff", "100").toInt(),
         QSet<QString>(ignored.begin(), ignored.end()));
   });
+  menu->addAction("never show again", this, [this]() {
+    // TODO: do not allow to do this before the wallpaper is set
+    auto ignored =
+        settings()->value("ignoredWallpapers", QStringList()).toStringList();
+    ignored.append(mCurrentWallpaper.id);
+    settings()->setValue("ignoredWallpapers", ignored);
+    settings()->sync();
+    busySlot("searching");
+    mSearcher->searchWallpapers(
+        settings()->value("searchTerm", "nature").toString(),
+        settings()->value("resultsCutoff", "100").toInt(),
+        QSet<QString>(ignored.begin(), ignored.end()));
+  });
+
   mButton->setMenu(menu);
   normalSlot();
 
@@ -106,9 +120,9 @@ void Wallflower::downloadDone(const QString &imageFile) {
 
 void Wallflower::searchDone(const QVector<Picture> &result) {
   int randomIndex = QRandomGenerator::global()->bounded(result.size());
-  auto p = result[randomIndex];
-  qDebug() << randomIndex << p.id << p.path;
-  mDownloader->download(p.path);
+  mCurrentWallpaper = result[randomIndex];
+  qDebug() << randomIndex << mCurrentWallpaper.id << mCurrentWallpaper.path;
+  mDownloader->download(mCurrentWallpaper.path);
 }
 
 QDialog *Wallflower::configureDialog() {

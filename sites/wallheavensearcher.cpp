@@ -38,6 +38,8 @@ void WallheavenSearcher::searchWallpapers(
   mCurrentPage = 1;
   mResultsCutoff = resultsCutoff;
   mIgnoredWallpapers = ignoredWallpapers;
+  qDebug() << "Searching for" << term;
+  qDebug() << "Ignoring" << ignoredWallpapers.size() << "wallpapers";
   mWallpapers.clear();
   mQuery = std::make_unique<const QString>(QUrl::toPercentEncoding(term));
   search();

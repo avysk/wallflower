@@ -51,6 +51,7 @@ private:
   std::unique_ptr<Podibasu> mPodibasu;
   std::unique_ptr<Searcher> mSearcher;
   std::unique_ptr<const QIcon> mBusyIcon, mErrorIcon, mNormalIcon;
+  Picture mCurrentWallpaper;
 };
 
 class WallflowerLibrary : public QObject, public ILXQtPanelPluginLibrary {
