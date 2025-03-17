@@ -3,6 +3,7 @@
 #include <QDialog>
 #include <QIcon>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QToolButton>
 #include <QVector>
@@ -43,14 +44,21 @@ private slots:
   void downloadDone(const QString &imageFile);
   void normalSlot(const QString &state = "");
   void searchDone(const QVector<Picture> &wallpapers);
+  void searchWallpapers();
 
 private:
-  void searchWallpapers(const QString &query);
+  void settingsChanged() override;
   std::unique_ptr<QToolButton> mButton;
   std::unique_ptr<Downloader> mDownloader;
   std::unique_ptr<Podibasu> mPodibasu;
   std::unique_ptr<Searcher> mSearcher;
   std::unique_ptr<const QIcon> mBusyIcon, mErrorIcon, mNormalIcon;
+  std::unique_ptr<QTimer> mTimer;
+  bool mAutoReload;
+  unsigned int mUpdateInterval;
+  QSet<QString> mIgnoredWallpapers;
+  unsigned int mResultsCutoff;
+  QString mSearchTerm;
   Picture mCurrentWallpaper;
 };
 

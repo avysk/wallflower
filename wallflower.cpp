@@ -27,6 +27,11 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
   mNormalIcon = std::make_unique<const QIcon>(
       QIcon::fromTheme("desktop-preferences-wallpaper"));
 
+  mTimer = std::make_unique<QTimer>();
+  connect(mTimer.get(), &QTimer::timeout, this, &Wallflower::searchWallpapers);
+
+  settingsChanged();
+
   mButton = std::make_unique<QToolButton>();
   mButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
   mButton->setPopupMode(QToolButton::InstantPopup);
@@ -38,28 +43,16 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
   aboutAction->setDefaultWidget(about);
   menu->addAction(aboutAction);
   menu->addSeparator();
-  menu->addAction("search", this, [this]() {
-    auto ignored =
-        settings()->value("ignoredWallpapers", QStringList()).toStringList();
-    busySlot("searching");
-    mSearcher->searchWallpapers(
-        settings()->value("searchTerm", "nature").toString(),
-        settings()->value("resultsCutoff", "100").toInt(),
-        QSet<QString>(ignored.begin(), ignored.end()));
-  });
+  menu->addAction("search", this, [this]() { searchWallpapers(); });
   menu->addAction("never show again", this, [this]() {
     // TODO: do not allow to do this before the wallpaper is set
     // TODO: do not allow to do this before the wallpaper is set by plugin
     auto ignored =
         settings()->value("ignoredWallpapers", QStringList()).toStringList();
     ignored.append(mCurrentWallpaper.id);
+    mIgnoredWallpapers.insert(mCurrentWallpaper.id);
     settings()->setValue("ignoredWallpapers", ignored);
-    settings()->sync();
-    busySlot("searching");
-    mSearcher->searchWallpapers(
-        settings()->value("searchTerm", "nature").toString(),
-        settings()->value("resultsCutoff", "100").toInt(),
-        QSet<QString>(ignored.begin(), ignored.end()));
+    searchWallpapers();
   });
 
   mButton->setMenu(menu);
@@ -132,4 +125,29 @@ void Wallflower::searchDone(const QVector<Picture> &result) {
 
 QDialog *Wallflower::configureDialog() {
   return new WallflowerSettings(settings());
+}
+
+void Wallflower::searchWallpapers() {
+  busySlot("searching");
+  mSearcher->searchWallpapers(mSearchTerm, mResultsCutoff, mIgnoredWallpapers);
+}
+
+void Wallflower::settingsChanged() {
+  qDebug() << "settingsChanged";
+  auto ignored =
+      settings()->value("ignoredWallpapers", QStringList()).toStringList();
+  mIgnoredWallpapers = QSet<QString>(ignored.begin(), ignored.end());
+
+  mAutoReload = settings()->value("autoReload", false).toBool();
+  mResultsCutoff = settings()->value("resultsCutoff", 100).toUInt();
+  mSearchTerm = settings()->value("searchTerm", "nature").toString();
+  mUpdateInterval = settings()->value("updateInterval", -1).toUInt();
+
+  if (mAutoReload) {
+    qDebug() << "autoReload" << mUpdateInterval;
+    mTimer->setInterval(mUpdateInterval);
+    mTimer->start();
+  } else {
+    mTimer->stop();
+  }
 }
