@@ -128,5 +128,6 @@ void WallheavenSearcher::onPageReceived(QNetworkReply *searchReply) {
     mTimer->start();
     return;
   }
+  qDebug() << "Search finished with" << mWallpapers.size() << "results";
   emit searchFinished(mWallpapers);
 }

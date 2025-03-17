@@ -49,6 +49,7 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
   });
   menu->addAction("never show again", this, [this]() {
     // TODO: do not allow to do this before the wallpaper is set
+    // TODO: do not allow to do this before the wallpaper is set by plugin
     auto ignored =
         settings()->value("ignoredWallpapers", QStringList()).toStringList();
     ignored.append(mCurrentWallpaper.id);
@@ -119,6 +120,10 @@ void Wallflower::downloadDone(const QString &imageFile) {
 }
 
 void Wallflower::searchDone(const QVector<Picture> &result) {
+  if (result.isEmpty()) {
+    errorSlot("No wallpapers found.");
+    return;
+  }
   int randomIndex = QRandomGenerator::global()->bounded(result.size());
   mCurrentWallpaper = result[randomIndex];
   qDebug() << randomIndex << mCurrentWallpaper.id << mCurrentWallpaper.path;
