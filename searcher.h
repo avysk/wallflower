@@ -3,6 +3,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QVector>
 
@@ -27,7 +28,8 @@ public:
   virtual void onSearchError(const QString &message);
 
 public slots:
-  void searchWallpapers(const QString &term, const unsigned int resultsCutoff);
+  void searchWallpapers(const QString &term, const unsigned int resultsCutoff,
+                        const QSet<QString> &ignoredWallpapers);
 
 private:
   std::unique_ptr<SearcherInterface> mImpl;

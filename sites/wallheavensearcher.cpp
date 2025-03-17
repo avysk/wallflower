@@ -5,6 +5,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QTimer>
 #include <QUrl>
@@ -31,10 +32,12 @@ void WallheavenSearcher::attach(const Searcher *searcher) const {
           &Searcher::onSearchError);
 }
 
-void WallheavenSearcher::searchWallpapers(const QString &term,
-                                          const unsigned int resultsCutoff) {
+void WallheavenSearcher::searchWallpapers(
+    const QString &term, const unsigned int resultsCutoff,
+    const QSet<QString> &ignoredWallpapers) {
   mCurrentPage = 1;
   mResultsCutoff = resultsCutoff;
+  mIgnoredWallpapers = ignoredWallpapers;
   mWallpapers.clear();
   mQuery = std::make_unique<const QString>(QUrl::toPercentEncoding(term));
   search();
@@ -104,6 +107,10 @@ void WallheavenSearcher::onPageReceived(QNetworkReply *searchReply) {
   for (const auto &entry : jsonArray) {
     const Picture p = {.id = entry.toObject()["id"].toString(),
                        .path = entry.toObject()["path"].toString()};
+    if (mIgnoredWallpapers.contains(p.id)) {
+      qDebug() << "Ignoring wallpaper" << p.id;
+      continue;
+    }
     mWallpapers.append(p);
   }
 

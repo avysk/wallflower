@@ -1,4 +1,5 @@
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QVector>
 
@@ -18,8 +19,9 @@ BaseSearcher<SearcherImplementation>::BaseSearcher(const Searcher &searcher) {
 template <typename SearcherImplementation>
   requires IsSearcherImplementation<SearcherImplementation>
 void BaseSearcher<SearcherImplementation>::searchWallpapers(
-    const QString &term, const unsigned int resultsCutoff) {
-  mImpl->searchWallpapers(term, resultsCutoff);
+    const QString &term, const unsigned int resultsCutoff,
+    const QSet<QString> &ignoredWallpapers) {
+  mImpl->searchWallpapers(term, resultsCutoff, ignoredWallpapers);
 }
 
 template class BaseSearcher<WallheavenSearcher>;

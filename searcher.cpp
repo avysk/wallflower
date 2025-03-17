@@ -1,6 +1,7 @@
 #include <memory>
 
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QVector>
 
@@ -17,8 +18,9 @@ void Searcher::onSearchError(const QString &message) {
 };
 
 void Searcher::searchWallpapers(const QString &term,
-                                const unsigned int resultsCutoff) {
-  mImpl->searchWallpapers(term, resultsCutoff);
+                                const unsigned int resultsCutoff,
+                                const QSet<QString> &ignoredWallpapers) {
+  mImpl->searchWallpapers(term, resultsCutoff, ignoredWallpapers);
 };
 
 void Searcher::setImpl(std::unique_ptr<SearcherInterface> interface) {

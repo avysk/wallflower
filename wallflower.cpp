@@ -3,6 +3,9 @@
 #include <QMenu>
 #include <QObject>
 #include <QRandomGenerator>
+#include <QSet>
+#include <QString>
+#include <QStringList>
 #include <QToolButton>
 #include <QWidgetAction>
 #include <QtCore/Qt>
@@ -23,6 +26,7 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
   mErrorIcon = std::make_unique<const QIcon>(QIcon::fromTheme("dialog-error"));
   mNormalIcon = std::make_unique<const QIcon>(
       QIcon::fromTheme("desktop-preferences-wallpaper"));
+
   mButton = std::make_unique<QToolButton>();
   mButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
   mButton->setPopupMode(QToolButton::InstantPopup);
@@ -35,10 +39,13 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
   menu->addAction(aboutAction);
   menu->addSeparator();
   menu->addAction("search", this, [this]() {
+    auto ignored =
+        settings()->value("ignoredWallpapers", QStringList()).toStringList();
     busySlot("searching");
     mSearcher->searchWallpapers(
         settings()->value("searchTerm", "nature").toString(),
-        settings()->value("resultsCutoff", "100").toInt());
+        settings()->value("resultsCutoff", "100").toInt(),
+        QSet<QString>(ignored.begin(), ignored.end()));
   });
   mButton->setMenu(menu);
   normalSlot();

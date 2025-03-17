@@ -3,6 +3,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QTimer>
 #include <QVector>
@@ -17,7 +18,8 @@ public:
   explicit WallheavenSearcher(QObject *parent = nullptr);
   ~WallheavenSearcher() = default;
   void attach(const Searcher *searcher) const;
-  void searchWallpapers(const QString &term, const unsigned int resultsCutoff);
+  void searchWallpapers(const QString &term, const unsigned int resultsCutoff,
+                        const QSet<QString> &ignoredWallpapers);
 
 signals:
   void searchFinished(const QVector<Picture> &result);
@@ -34,4 +36,5 @@ private:
   std::unique_ptr<const QString> mQuery;
   std::unique_ptr<QTimer> mTimer;
   QVector<Picture> mWallpapers;
+  QSet<QString> mIgnoredWallpapers;
 };

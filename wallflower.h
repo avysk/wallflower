@@ -3,10 +3,12 @@
 #include <QDialog>
 #include <QIcon>
 #include <QObject>
+#include <QString>
 #include <QToolButton>
 #include <QVector>
 #include <ilxqtpanel.h>
 #include <ilxqtpanelplugin.h>
+#include <qcontainerfwd.h>
 
 #include "downloader.h"
 #include "picture.h"

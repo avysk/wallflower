@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <QSet>
 #include <QString>
 
 #include "searcher.h"
@@ -15,8 +16,9 @@ class BaseSearcher : public SearcherInterface {
 public:
   explicit BaseSearcher(const Searcher &searcher);
   ~BaseSearcher() = default;
-  virtual void searchWallpapers(const QString &term,
-                                const unsigned int resultsCutoff) override;
+  virtual void
+  searchWallpapers(const QString &term, const unsigned int resultsCutoff,
+                   const QSet<QString> &ignoredWallpapers) override;
 
 private:
   std::unique_ptr<SearcherImplementation> mImpl;
