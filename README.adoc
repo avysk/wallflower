@@ -56,10 +56,24 @@ done in LXQT Session Settings, in the Environment section.
 other LXQT panel plugins are.
 
 After you add the plugin to the panel, clicking on the corresponding icon will
-show the menu with one command ("search"). Click on it to download and set a
-wallpaper. When the plugin operates, the plugin icon is changed to show it is in a
-busy state. If something goes wrong, the plugin icon will be changed to show
-that an error occurred and a tooltip will contain the corresponding error message.
+show the menu with will contain two commands ("search" and "never show
+again").
+
+Click on "search" to download and set a
+wallpaper. When the plugin operates, the plugin icon is changed to show it is
+in a busy state. If something goes wrong, the plugin icon will be changed to
+show that an error occurred and a tooltip will contain the corresponding error
+message.
+
+Clicking on "never show again" will prevent the current wallpaper from being
+shown again. The plugin will search for a new wallpaper immediately. The
+setting is saved between the sessions. Currently, there is no way to edit the
+list of wallpapers that should not be shown again, short of completely
+removing it by manually editing the configuration file
+(`~/.config/lxqt/lxqt-panel.conf`, find "wallflower" section and remove
+`ignoredWallpapers` key).
+
+=== Configuration
 
 In a plugin configuration dialog, you can search a term to be used for
 searching wallpapers. The search term is saved between the sessions. The
@@ -68,6 +82,11 @@ As soon as the plugin finds the number of wallpapers at least equal to the
 cutoff value, it stops searching. The default value is 100. The maximum value
 possible is 9999. Notice that the setting high value may result in a long
 delay in the search due to the rate limiting.
+
+If the checkbox "Auto reload wallpaper" is checked, you can choose next to it
+the time interval (1, 5, 10, 15, 30 minutes, or 1, 2, 6, 12, 24 hours) after
+which  the plugin will search for a new wallpaper. The default value is 1
+minute.
 
 == Hackety-hack
 
