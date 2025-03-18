@@ -89,6 +89,7 @@ void Wallflower::updateMenu(QMenu *newMenu) {
   mButton->setMenu(newMenu);
   mButton->update();
   if (oldMenu) {
+    oldMenu->disconnect();
     oldMenu->deleteLater();
   }
 }
@@ -151,6 +152,8 @@ void Wallflower::normalSlot(const QString &state) {
   updateMenu(menu);
   setMessage(state);
   mTimer->start();
+  connect(menu, &QMenu::aboutToShow, this, [this]() { mTimer->stop(); });
+  connect(menu, &QMenu::aboutToHide, this, [this]() { mTimer->start(); });
 }
 
 void Wallflower::downloadDone(const QString &imageFile) {
