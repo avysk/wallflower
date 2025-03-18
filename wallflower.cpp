@@ -2,6 +2,7 @@
 #include <QLabel>
 #include <QMenu>
 #include <QObject>
+#include <QPushButton>
 #include <QRandomGenerator>
 #include <QSet>
 #include <QString>
@@ -23,6 +24,8 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
     : QObject(), ILXQtPanelPlugin(startupInfo) {
   qDebug() << "Wallflower" << WALLFLOWER_VERSION;
   mBusyIcon = std::make_unique<const QIcon>(QIcon::fromTheme("view-refresh"));
+  mDbusIcon =
+      std::make_unique<const QIcon>(QIcon::fromTheme("image-x-generic"));
   mErrorIcon = std::make_unique<const QIcon>(QIcon::fromTheme("dialog-error"));
   mNormalIcon = std::make_unique<const QIcon>(
       QIcon::fromTheme("desktop-preferences-wallpaper"));
@@ -35,27 +38,6 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
   mButton = std::make_unique<QToolButton>();
   mButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
   mButton->setPopupMode(QToolButton::InstantPopup);
-  auto menu = new QMenu(mButton.get());
-  auto *about = new QLabel(QString("wallflower %1").arg(WALLFLOWER_VERSION));
-  about->setAlignment(Qt::AlignCenter);
-  about->setStyleSheet("font-weight: bold;");
-  auto *aboutAction = new QWidgetAction(menu);
-  aboutAction->setDefaultWidget(about);
-  menu->addAction(aboutAction);
-  menu->addSeparator();
-  menu->addAction("search", this, [this]() { searchWallpapers(); });
-  menu->addAction("never show again", this, [this]() {
-    // TODO: do not allow to do this before the wallpaper is set
-    // TODO: do not allow to do this before the wallpaper is set by plugin
-    auto ignored =
-        settings()->value("ignoredWallpapers", QStringList()).toStringList();
-    ignored.append(mCurrentWallpaper.id);
-    mIgnoredWallpapers.insert(mCurrentWallpaper.id);
-    settings()->setValue("ignoredWallpapers", ignored);
-    searchWallpapers();
-  });
-
-  mButton->setMenu(menu);
   normalSlot();
 
   mDownloader = std::make_unique<Downloader>();
@@ -90,25 +72,97 @@ void Wallflower::setMessage(const QString &message) {
   mButton->update();
 }
 
+QMenu *Wallflower::menuWithAbout() {
+  auto menu = new QMenu(mButton.get());
+  auto *about = new QLabel(QString("wallflower %1").arg(WALLFLOWER_VERSION));
+  about->setAlignment(Qt::AlignCenter);
+  about->setStyleSheet("font-weight: bold;");
+  auto *aboutAction = new QWidgetAction(menu);
+  aboutAction->setDefaultWidget(about);
+  menu->addAction(aboutAction);
+  menu->addSeparator();
+  return menu;
+}
+
+void Wallflower::updateMenu(QMenu *newMenu) {
+  QPointer<QMenu> oldMenu = mButton->menu();
+  mButton->setMenu(newMenu);
+  mButton->update();
+  if (oldMenu) {
+    oldMenu->deleteLater();
+  }
+}
+
 void Wallflower::busySlot(const QString &state) {
   mButton->setIcon(*mBusyIcon);
-  setMessage(state);
+
+  mTimer->stop();
+  auto menu = menuWithAbout();
+  auto *searchMessage = new QLabel(state);
+  searchMessage->setAlignment(Qt::AlignCenter);
+  auto *searchAction = new QWidgetAction(menu);
+  searchAction->setDefaultWidget(searchMessage);
+  menu->addAction(searchAction);
+  updateMenu(menu);
 }
 
 void Wallflower::errorSlot(const QString &message) {
   mButton->setIcon(*mErrorIcon);
+
+  auto menu = menuWithAbout();
+  menu->addAction("show error message", this, [this, message]() {
+    QDialog dialog;
+    dialog.setWindowIcon(*mErrorIcon);
+    dialog.setWindowTitle("Wallflower Error");
+
+    auto *label = new QLabel(message, &dialog);
+    label->setWordWrap(true);
+    label->setFixedWidth(300);
+    auto *closeButton = new QPushButton("Close", &dialog);
+    connect(closeButton, &QPushButton::clicked, &dialog, &QDialog::close);
+    auto *layout = new QVBoxLayout(&dialog);
+    layout->addWidget(label);
+    layout->addWidget(closeButton);
+    dialog.setLayout(layout);
+    dialog.exec();
+    dialog.deleteLater();
+  });
+  menu->addAction("clear error", this, [this]() { normalSlot(); });
+  updateMenu(menu);
+
   setMessage(message);
 }
 
 void Wallflower::normalSlot(const QString &state) {
   mButton->setIcon(*mNormalIcon);
-  mButton->update();
+
+  auto menu = menuWithAbout();
+  menu->addAction("search", this, [this]() { searchWallpapers(); });
+  menu->addAction("never show again", this, [this]() {
+    // TODO: do not allow to do this before the wallpaper is set by plugin
+    auto ignored =
+        settings()->value("ignoredWallpapers", QStringList()).toStringList();
+    ignored.append(mCurrentWallpaper.id);
+    mIgnoredWallpapers.insert(mCurrentWallpaper.id);
+    settings()->setValue("ignoredWallpapers", ignored);
+    searchWallpapers();
+  });
+
+  updateMenu(menu);
   setMessage(state);
+  mTimer->start();
 }
 
 void Wallflower::downloadDone(const QString &imageFile) {
-  this->busySlot(
-      QString("Wallpaper downloaded to %1, setting.").arg(imageFile));
+  mButton->setIcon(*mDbusIcon);
+  auto menu = menuWithAbout();
+  auto *settingMessage = new QLabel("Setting wallpaper...");
+  settingMessage->setAlignment(Qt::AlignCenter);
+  auto *searchAction = new QWidgetAction(menu);
+  searchAction->setDefaultWidget(settingMessage);
+  menu->addAction(searchAction);
+  updateMenu(menu);
+  setMessage(QString("Wallpaper downloaded to %1, setting...").arg(imageFile));
   mPodibasu->setWallpaper(imageFile);
 }
 
