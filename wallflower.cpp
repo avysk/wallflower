@@ -57,13 +57,15 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
   connect(mPodibasu.get(), &Podibasu::wallpaperSetError, this,
           &Wallflower::errorSlot);
 
-  mSearcher = std::make_unique<Searcher>();
-  auto impl = Registry::createSearcher("wallheaven", *mSearcher);
-  mSearcher->setImpl(std::move(impl));
-  connect(mSearcher.get(), &Searcher::searchFinished, this,
+  mSearchers = std::vector<std::unique_ptr<Searcher>>();
+  mSearcherIndex = 0;
+  auto searcher = std::make_unique<Searcher>();
+  auto impl = Registry::createSearcher("wallheaven", *searcher);
+  searcher->setImpl(std::move(impl));
+  connect(searcher.get(), &Searcher::searchFinished, this,
           &Wallflower::searchDone);
-  connect(mSearcher.get(), &Searcher::searchError, this,
-          &Wallflower::errorSlot);
+  connect(searcher.get(), &Searcher::searchError, this, &Wallflower::errorSlot);
+  mSearchers.push_back(std::move(searcher));
 }
 
 Wallflower::~Wallflower() = default;
@@ -192,7 +194,13 @@ QDialog *Wallflower::configureDialog() {
 
 void Wallflower::searchWallpapers() {
   busySlot("searching");
-  mSearcher->searchWallpapers(mSearchTerm, mResultsCutoff, mIgnoredWallpapers);
+  if (mSearchers.empty()) {
+    errorSlot("No searchers available.");
+    return;
+  }
+  mSearchers[mSearcherIndex++]->searchWallpapers(mSearchTerm, mResultsCutoff,
+                                                 mIgnoredWallpapers);
+  mSearcherIndex %= mSearchers.size();
 }
 
 void Wallflower::settingsChanged() {
