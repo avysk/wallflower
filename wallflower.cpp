@@ -108,6 +108,7 @@ void Wallflower::busySlot(const QString &state) {
 }
 
 void Wallflower::errorSlot(const QString &message) {
+  // TODO: postpone if the busy menu is shown
   mButton->setIcon(*mErrorIcon);
 
   auto menu = menuWithAbout();
