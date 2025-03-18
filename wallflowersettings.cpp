@@ -60,15 +60,18 @@ WallflowerSettings::WallflowerSettings(PluginSettings &settings,
 
 PluginSettings &WallflowerSettings::settings() const { return mSettings; }
 
+#define UPDATE(setting, setting_in_ui)                                         \
+  if (!mSettings.contains(setting) ||                                          \
+      (ui->setting_in_ui) != mSettings.value(setting)) {                       \
+    mSettings.setValue((setting), (ui->setting_in_ui));                        \
+  }
+
 void WallflowerSettings::dialogButtonBoxAction(QAbstractButton *button) {
   if (ui->buttonBox->buttonRole(button) == QDialogButtonBox::AcceptRole) {
-    mSettings.setValue(QStringLiteral("resultsCutoff"),
-                       ui->resultsCutoff->text());
-    mSettings.setValue(QStringLiteral("searchTerm"), ui->searchTerm->text());
-    mSettings.setValue(QStringLiteral("autoReload"),
-                       ui->autoReload->isChecked());
-    mSettings.setValue(QStringLiteral("updateInterval"),
-                       ui->updateInterval->currentData());
+    UPDATE("resultsCutoff", resultsCutoff->text());
+    UPDATE("searchTerm", searchTerm->text());
+    UPDATE("autoReload", autoReload->isChecked());
+    UPDATE("updateInterval", updateInterval->currentData());
   }
   close();
 }
