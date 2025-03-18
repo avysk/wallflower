@@ -1,3 +1,8 @@
 - Handle 429 when downloading image
 - Handle TODOs in the code
-- Make configuration work
+- Change menu in different states
+- Make sure the error stops plugin until acknowledged
+- Use a vector of wallpaper sources
+- Add a way to configure one wallpaper source
+- Add a way to set a list of wallpaper sources
+- Use factory pattern for different SearcherImplementations
