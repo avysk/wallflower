@@ -28,7 +28,7 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
       std::make_unique<const QIcon>(QIcon::fromTheme("image-x-generic"));
   mErrorIcon = std::make_unique<const QIcon>(QIcon::fromTheme("dialog-error"));
   mNormalIcon = std::make_unique<const QIcon>(
-      QIcon::fromTheme("desktop-preferences-wallpaper"));
+      QIcon::fromTheme("preferences-desktop-wallpaper"));
 
   mTimer = std::make_unique<QTimer>();
   connect(mTimer.get(), &QTimer::timeout, this, &Wallflower::searchWallpapers);
