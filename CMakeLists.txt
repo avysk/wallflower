@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.0 FATAL_ERROR)
 
-project(wallflower VERSION 1.3.1)
+project(wallflower VERSION 1.3.2)
 
 set(PLUGIN "wallflower")
 
