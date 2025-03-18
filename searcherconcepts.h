@@ -17,4 +17,5 @@ concept IsSearcherImplementation =
       {
         impl.searchWallpapers(term, resultsCutoff, ignoredWallpapers)
       } -> std::same_as<void>;
+      { SearcherImplementation::name() } -> std::same_as<QString>;
     };

@@ -1,3 +1,5 @@
+#include <memory>
+
 #include <QDialog>
 #include <QLabel>
 #include <QMenu>
@@ -7,13 +9,14 @@
 #include <QSet>
 #include <QString>
 #include <QStringList>
+#include <QTimer>
 #include <QToolButton>
 #include <QWidgetAction>
 #include <QtCore/Qt>
 #include <ilxqtpanelplugin.h>
 
-#include "basesearcher.h"
 #include "downloader.h"
+#include "registry.h"
 #include "searcher.h"
 #include "sites/wallheavensearcher.h"
 #include "version.h"
@@ -22,6 +25,8 @@
 
 Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
     : QObject(), ILXQtPanelPlugin(startupInfo) {
+  Registry::registerSearcher<WallheavenSearcher>();
+
   qDebug() << "Wallflower" << WALLFLOWER_VERSION;
   mBusyIcon = std::make_unique<const QIcon>(QIcon::fromTheme("view-refresh"));
   mDbusIcon =
@@ -53,8 +58,8 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
           &Wallflower::errorSlot);
 
   mSearcher = std::make_unique<Searcher>();
-  mSearcher->setImpl(
-      std::make_unique<BaseSearcher<WallheavenSearcher>>(*mSearcher));
+  auto impl = Registry::createSearcher("wallheaven", *mSearcher);
+  mSearcher->setImpl(std::move(impl));
   connect(mSearcher.get(), &Searcher::searchFinished, this,
           &Wallflower::searchDone);
   connect(mSearcher.get(), &Searcher::searchError, this,

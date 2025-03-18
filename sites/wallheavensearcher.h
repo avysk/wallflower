@@ -17,6 +17,7 @@ class WallheavenSearcher : public QObject {
 public:
   explicit WallheavenSearcher(QObject *parent = nullptr);
   ~WallheavenSearcher() = default;
+  static QString name() { return "wallheaven"; }
   void attach(const Searcher *searcher) const;
   void searchWallpapers(const QString &term, const unsigned int resultsCutoff,
                         const QSet<QString> &ignoredWallpapers);
