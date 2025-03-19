@@ -90,7 +90,7 @@ void WallheavenSearcher::onPageReceived(QNetworkReply *searchReply) {
                            "the value of Retry-After header cannot be parsed.");
         }
       }
-    } else { // nat 429
+    } else { // not 429
       emit searchError(
           QString("Cannot get page %1 af search result for term %2: %3 %4")
               .arg(mCurrentPage)
