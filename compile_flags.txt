@@ -9,9 +9,15 @@
 -isystem
 /usr/local/include/qt6/QtNetwork
 -isystem
+/usr/local/include/qt6/QtTest
+-isystem
 /usr/local/include/qt6/QtWidgets
 -isystem
 /usr/local/include/lxqt
+-isystem
+build/googletest/src/googletest/googlemock/include
+-isystem
+build/googletest/src/googletest/googletest/include
 -Wall
 -Wextra
 -pedantic

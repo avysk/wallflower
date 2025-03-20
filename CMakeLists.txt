@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.20.0 FATAL_ERROR)
 
 project(wallflower VERSION 1.4.1)
 
+enable_testing()
+
 set(PLUGIN "wallflower")
 
 set(CMAKE_CXX_STANDARD 20)
@@ -21,7 +23,7 @@ configure_file(
 )
 include_directories(${CMAKE_BINARY_DIR})
 
-find_package(Qt6 COMPONENTS DBus Gui Network Widgets REQUIRED)
+find_package(Qt6 COMPONENTS Core DBus Gui Network Widgets REQUIRED)
 find_package(lxqt 2.1.0 REQUIRED)
 
 set(UI_FILES wallflowersettings.ui)
@@ -49,3 +51,35 @@ install(TARGETS ${PLUGIN}
     DESTINATION "${INSTALL_DIR}/lib/lxqt-panel")
 install(FILES ${CMAKE_BINARY_DIR}/${PLUGIN}.desktop
     DESTINATION "${INSTALL_DIR}/share/lxqt/lxqt-panel")
+
+# Google Test
+include(ExternalProject)
+ExternalProject_Add(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.16.0.tar.gz
+    DOWNLOAD_EXTRACT_TIMESTAMP true
+    PREFIX ${CMAKE_BINARY_DIR}/googletest
+    INSTALL_COMMAND ""
+)
+ExternalProject_Get_Property(googletest binary_dir)
+link_directories(${binary_dir}/lib)
+ExternalProject_Get_Property(googletest source_dir)
+include_directories(${source_dir}/googletest/include)
+include_directories(${source_dir}/googlemock/include)
+
+add_executable(test_ident
+    ident.h tests/test_ident.cpp)
+
+target_link_libraries(test_ident gtest gtest_main Qt6::Core)
+add_test(NAME test_ident COMMAND test_ident)
+
+set(TESTS test_ident)
+
+set(TESTS_MARKER_FILE run_tests)
+
+add_custom_command(
+    OUTPUT ${TESTS_MARKER_FILE}
+    COMMAND ${CMAKE_CTEST_COMMAND} -j --verbose --output-on-failure
+    COMMAND ${CMAKE_COMMAND} -E touch ${TESTS_MARKER_FILE}
+    DEPENDS ${TESTS})
+add_custom_target(check ALL DEPENDS run_tests)
