@@ -19,6 +19,7 @@ public:
   virtual void
   searchWallpapers(const QString &term, const unsigned int resultsCutoff,
                    const QSet<QString> &ignoredWallpapers) override;
+  static QString name() { return SearcherImplementation::name(); }
 
 private:
   std::unique_ptr<SearcherImplementation> mImpl;

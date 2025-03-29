@@ -9,4 +9,5 @@ public:
   virtual void searchWallpapers(const QString &term,
                                 const unsigned int resultsCutoff,
                                 const QSet<QString> &ignoredWallpapers) = 0;
+  static QString name();
 };
