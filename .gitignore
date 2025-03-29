@@ -1,3 +1,4 @@
 /build/
 *.core
 .*.sw[a-z]
+*.ui.bak
