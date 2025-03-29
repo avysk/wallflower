@@ -1,14 +1,32 @@
 #pragma once
 
+#include <QDir>
 #include <QNetworkAccessManager>
 #include <QObject>
 #include <QString>
+#include <memory>
+
+class IPathmaker {
+
+public:
+  virtual void makePath(const QString &path) const = 0;
+  virtual ~IPathmaker() = default;
+};
+
+class QPathmaker : public IPathmaker {
+public:
+  virtual void makePath(const QString &path) const override {
+    QDir().mkpath(path);
+  }
+};
 
 class Downloader : public QObject {
   Q_OBJECT
 
 public:
-  Downloader(QObject *parent = nullptr);
+  explicit Downloader(QObject *parent = nullptr);
+  explicit Downloader(std::unique_ptr<IPathmaker> pathmaker,
+                      QObject *parent = nullptr);
   ~Downloader() = default;
 
 signals:

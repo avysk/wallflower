@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QStandardPaths>
 #include <QUrl>
+#include <memory>
 
 #include "downloader.h"
 
@@ -14,7 +15,8 @@ Downloader::Downloader(QObject *parent) : QObject(parent) {
   mSavePath = std::make_unique<const QString>(
       QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) +
       "/wallflower");
-  QDir(*mSavePath).mkpath(".");
+  auto pathmaker = std::make_unique<QPathmaker>();
+  pathmaker->makePath(*mSavePath);
 
   mDownloadManager = std::make_unique<QNetworkAccessManager>();
   connect(mDownloadManager.get(), &QNetworkAccessManager::finished, this,
