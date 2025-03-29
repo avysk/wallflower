@@ -1,3 +1,4 @@
+#include <QIntValidator>
 #include <QRegularExpressionValidator>
 #include <pluginsettings.h>
 
@@ -26,6 +27,13 @@ WallflowerSettings::WallflowerSettings(PluginSettings &settings,
   if (!settings.contains(QStringLiteral("updateInterval"))) {
     settings.setValue(QStringLiteral("updateInterval"), 60000);
   }
+  if (!settings.contains(QStringLiteral("autoAcknowledge"))) {
+    settings.setValue(QStringLiteral("autoAcknowledge"),
+                      QStringLiteral("false"));
+  }
+  if (!settings.contains(QStringLiteral("autoAcknowledgeInterval"))) {
+    settings.setValue(QStringLiteral("autoAcknowledgeInterval"), 1);
+  }
 
   ui->resultsCutoff->setText(
       settings.value(QStringLiteral("resultsCutoff")).toString());
@@ -36,6 +44,10 @@ WallflowerSettings::WallflowerSettings(PluginSettings &settings,
   if (!ui->autoReload->isChecked()) {
     ui->updateInterval->setEnabled(false);
   }
+  ui->autoAcknowledge->setChecked(
+      settings.value(QStringLiteral("autoAcknowledge")).toBool());
+  ui->autoAcknowledgeInterval->setText(
+      settings.value(QStringLiteral("autoAcknowledgeInterval")).toString());
 
   // Delay in milliseconds
   ui->updateInterval->setItemData(0, 60000);    // 1 minute
@@ -56,6 +68,16 @@ WallflowerSettings::WallflowerSettings(PluginSettings &settings,
       ui->updateInterval->setCurrentIndex(index);
     }
   }
+
+  if (ui->autoAcknowledge->isChecked()) {
+    ui->autoAcknowledgeInterval->setEnabled(true);
+  } else {
+    ui->autoAcknowledgeInterval->setEnabled(false);
+  }
+
+  ui->autoAcknowledgeInterval->setText(
+      QString::number(settings.value("autoAcknowledgeInterval", 1).toInt()));
+  ui->autoAcknowledgeInterval->setValidator(new QIntValidator(0, 10000, this));
 }
 
 PluginSettings &WallflowerSettings::settings() const { return mSettings; }
@@ -72,6 +94,13 @@ void WallflowerSettings::dialogButtonBoxAction(QAbstractButton *button) {
     UPDATE("searchTerm", searchTerm->text());
     UPDATE("autoReload", autoReload->isChecked());
     UPDATE("updateInterval", updateInterval->currentData());
+    auto aInterval = ui->autoAcknowledgeInterval->text().toInt();
+    if (aInterval == 0) {
+      ui->autoAcknowledge->setChecked(false);
+      ui->autoAcknowledgeInterval->setText(QString::number(1));
+    }
+    UPDATE("autoAcknowledge", autoAcknowledge->isChecked());
+    UPDATE("autoAcknowledgeInterval", autoAcknowledgeInterval->text());
+    close();
   }
-  close();
 }

@@ -35,8 +35,13 @@ Wallflower::Wallflower(const ILXQtPanelPluginStartupInfo &startupInfo)
   mNormalIcon = std::make_unique<const QIcon>(
       QIcon::fromTheme("preferences-desktop-wallpaper"));
 
-  mTimer = std::make_unique<QTimer>();
-  connect(mTimer.get(), &QTimer::timeout, this, &Wallflower::searchWallpapers);
+  mErrorTimer = std::make_unique<QTimer>();
+  mErrorTimer->setSingleShot(true);
+  connect(mErrorTimer.get(), &QTimer::timeout, this,
+          &Wallflower::searchWallpapers);
+  mUpdateTimer = std::make_unique<QTimer>();
+  connect(mUpdateTimer.get(), &QTimer::timeout, this,
+          &Wallflower::searchWallpapers);
 
   settingsChanged();
 
@@ -104,7 +109,7 @@ void Wallflower::updateMenu(QMenu *newMenu) {
 void Wallflower::busySlot(const QString &state) {
   mButton->setIcon(*mBusyIcon);
 
-  mTimer->stop();
+  mUpdateTimer->stop();
   auto menu = menuWithAbout();
   auto *searchMessage = new QLabel(state);
   searchMessage->setAlignment(Qt::AlignCenter);
@@ -117,6 +122,10 @@ void Wallflower::busySlot(const QString &state) {
 void Wallflower::errorSlot(const QString &message) {
   // TODO: postpone if the busy menu is shown
   mButton->setIcon(*mErrorIcon);
+
+  if (mAutoAcknowledge) {
+    mErrorTimer->start(mAutoAcknowledgeInterval * 1000);
+  }
 
   auto menu = menuWithAbout();
   menu->addAction("show error message", this, [this, message]() {
@@ -136,13 +145,17 @@ void Wallflower::errorSlot(const QString &message) {
     dialog.exec();
     dialog.deleteLater();
   });
-  menu->addAction("clear error", this, [this]() { normalSlot(); });
+  menu->addAction("clear error", this, [this]() {
+    mErrorTimer->stop();
+    normalSlot();
+  });
   updateMenu(menu);
 
   setMessage(message);
 }
 
 void Wallflower::normalSlot(const QString &state) {
+
   mButton->setIcon(*mNormalIcon);
 
   auto menu = menuWithAbout();
@@ -159,9 +172,9 @@ void Wallflower::normalSlot(const QString &state) {
 
   updateMenu(menu);
   setMessage(state);
-  mTimer->start();
-  connect(menu, &QMenu::aboutToShow, this, [this]() { mTimer->stop(); });
-  connect(menu, &QMenu::aboutToHide, this, [this]() { mTimer->start(); });
+  mUpdateTimer->start();
+  connect(menu, &QMenu::aboutToShow, this, [this]() { mUpdateTimer->stop(); });
+  connect(menu, &QMenu::aboutToHide, this, [this]() { mUpdateTimer->start(); });
 }
 
 void Wallflower::downloadDone(const QString &imageFile) {
@@ -204,11 +217,13 @@ void Wallflower::searchWallpapers() {
 }
 
 void Wallflower::settingsChanged() {
-  qDebug() << "settingsChanged";
   auto ignored =
       settings()->value("ignoredWallpapers", QStringList()).toStringList();
   mIgnoredWallpapers = QSet<QString>(ignored.begin(), ignored.end());
 
+  mAutoAcknowledge = settings()->value("autoAcknowledge", false).toBool();
+  mAutoAcknowledgeInterval =
+      settings()->value("autoAcknowledgeInterval", 1).toUInt();
   mAutoReload = settings()->value("autoReload", false).toBool();
   mResultsCutoff = settings()->value("resultsCutoff", 100).toUInt();
   mSearchTerm = settings()->value("searchTerm", "nature").toString();
@@ -216,9 +231,13 @@ void Wallflower::settingsChanged() {
 
   if (mAutoReload) {
     qDebug() << "autoReload" << mUpdateInterval;
-    mTimer->setInterval(mUpdateInterval);
-    mTimer->start();
+    mUpdateTimer->setInterval(mUpdateInterval);
+    mUpdateTimer->start();
   } else {
-    mTimer->stop();
+    mUpdateTimer->stop();
+  }
+
+  if (mAutoAcknowledge) {
+    qDebug() << "autoAcknowledge" << mAutoAcknowledgeInterval;
   }
 }

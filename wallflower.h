@@ -54,9 +54,11 @@ private:
   std::unique_ptr<Downloader> mDownloader;
   std::unique_ptr<Podibasu> mPodibasu;
   std::unique_ptr<const QIcon> mBusyIcon, mDbusIcon, mErrorIcon, mNormalIcon;
-  std::unique_ptr<QTimer> mTimer;
+  std::unique_ptr<QTimer> mErrorTimer, mUpdateTimer;
   std::vector<std::unique_ptr<Searcher>> mSearchers;
   unsigned int mSearcherIndex;
+  bool mAutoAcknowledge;
+  unsigned int mAutoAcknowledgeInterval;
   bool mAutoReload;
   unsigned int mUpdateInterval;
   QSet<QString> mIgnoredWallpapers;

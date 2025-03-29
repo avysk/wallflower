@@ -6,23 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>413</width>
-    <height>174</height>
+    <width>428</width>
+    <height>211</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Wallflower settings</string>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>395</width>
-     <height>152</height>
+     <width>411</width>
+     <height>191</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="sizeConstraint">
+     <enum>QLayout::SizeConstraint::SetNoConstraint</enum>
+    </property>
     <item>
      <widget class="QLabel" name="label">
       <property name="baseSize">
@@ -160,6 +163,27 @@
      </layout>
     </item>
     <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QCheckBox" name="autoAcknowledge">
+        <property name="text">
+         <string>Autoacknowledge error after</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="autoAcknowledgeInterval"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>seconds</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <widget class="QDialogButtonBox" name="buttonBox">
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
@@ -181,12 +205,12 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>249</x>
-     <y>126</y>
+     <x>250</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
-     <y>274</y>
+     <y>210</y>
     </hint>
    </hints>
   </connection>
@@ -197,12 +221,12 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>317</x>
-     <y>126</y>
+     <x>318</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
-     <y>274</y>
+     <y>210</y>
     </hint>
    </hints>
   </connection>
@@ -213,12 +237,28 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>154</y>
+     <x>132</x>
+     <y>131</y>
     </hint>
     <hint type="destinationlabel">
-     <x>272</x>
-     <y>147</y>
+     <x>418</x>
+     <y>132</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>autoAcknowledge</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>autoAcknowledgeInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>174</x>
+     <y>153</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>278</x>
+     <y>154</y>
     </hint>
    </hints>
   </connection>
