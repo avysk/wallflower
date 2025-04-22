@@ -69,11 +69,15 @@ include_directories(${source_dir}/googlemock/include)
 
 add_executable(test_ident
     ident.h tests/test_ident.cpp)
-
 target_link_libraries(test_ident gtest gtest_main Qt6::Core)
 add_test(NAME test_ident COMMAND test_ident)
 
-set(TESTS test_ident)
+add_executable(test_downloader
+    downloader.h downloader.cpp tests/test_downloader.cpp)
+target_link_libraries(test_downloader gtest gtest_main gmock Qt6::Core Qt6::Network)
+add_test(NAME test_downloader COMMAND test_downloader)
+
+set(TESTS test_downloader test_ident)
 
 set(TESTS_MARKER_FILE run_tests)
 
